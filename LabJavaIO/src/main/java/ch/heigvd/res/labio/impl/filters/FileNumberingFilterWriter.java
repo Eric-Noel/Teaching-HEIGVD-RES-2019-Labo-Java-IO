@@ -1,5 +1,7 @@
 package ch.heigvd.res.labio.impl.filters;
 
+import ch.heigvd.res.labio.impl.Utils;
+
 import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -23,19 +25,76 @@ public class FileNumberingFilterWriter extends FilterWriter {
     super(out);
   }
 
+  private  int actual = 1;
+  private boolean newLine = true;
   @Override
   public void write(String str, int off, int len) throws IOException {
-    throw new UnsupportedOperationException("The student has not implemented this method yet.");
+    str = str.substring(off, off+len);
+    String lines[] = Utils.getNextLine(str);
+
+    while(!lines[0].equals("")){
+      if (newLine) {
+        out.write(actual++ + "\t" + lines[0]);
+      }
+      else {
+        out.write(lines[0]);
+      }
+      newLine = true;
+      lines = Utils.getNextLine(lines[1]);
+    }
+    if(newLine){
+      out.write(actual++ + "\t" + lines[1]);
+      newLine = false;
+    }
+    else{
+      out.write(lines[1]);
+    }
   }
 
   @Override
   public void write(char[] cbuf, int off, int len) throws IOException {
-    throw new UnsupportedOperationException("The student has not implemented this method yet.");
+    String str = new String();
+    for (int k = 0; k < cbuf.length; k++){
+      str = str + cbuf[k];
+    }
+    str = str.substring(off, off+len);
+    String lines[] = Utils.getNextLine(str);
+
+    while (!lines[0].equals("")){
+      if (newLine) {
+        out.write(actual++ + "\t" + lines[0]);
+      }
+      else {
+        out.write(lines[0]);
+      }
+      newLine = true;
+      lines = Utils.getNextLine(lines[1]);
+    }
+    if(newLine){
+      out.write(actual++ + "\t" + lines[1]);
+      newLine = false;
+    }
+    else{
+      out.write(lines[1]);
+    }
   }
 
   @Override
   public void write(int c) throws IOException {
-    throw new UnsupportedOperationException("The student has not implemented this method yet.");
-  }
+    String str = String.valueOf((char)c);
+    String lines[] = Utils.getNextLine(str);
 
+    if(!lines[0].equals("")){
+      out.write(lines[0]);
+      newLine = true;
+    }
+    else if(newLine){
+      out.write(actual++ + "\t" + lines[1]);
+      newLine = false;
+    }
+    else{
+      out.write(lines[1]);
+      newLine = false;
+    }
+  }
 }

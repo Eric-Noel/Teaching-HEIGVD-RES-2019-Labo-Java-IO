@@ -20,8 +20,22 @@ public class Utils {
    * contain any line separator, then the first element is an empty string.
    */
   public static String[] getNextLine(String lines) {
-    return lines.split("%n");
-    //throw new UnsupportedOperationException("The student has not implemented this method yet.");
+    String [] strTab;
+    if(!lines.contains("\r\n")){
+        if(lines.contains("\r") || lines.contains("\n")){
+            strTab = lines.split("['\r''\n']",2);
+            strTab[0] = strTab[0] + lines.charAt(strTab[0].length());
+        }
+        else {
+            strTab = new String[]{"", lines};
+        }
+    }
+    else {
+        strTab = lines.split("['\r\n']",2);
+        strTab[0] = strTab[0] + "\r\n";
+        strTab[1] = strTab[1].substring(1);
+    }
+    return strTab;
   }
 
 }
