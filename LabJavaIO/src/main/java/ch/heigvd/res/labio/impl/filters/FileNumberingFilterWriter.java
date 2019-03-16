@@ -25,76 +25,43 @@ public class FileNumberingFilterWriter extends FilterWriter {
     super(out);
   }
 
-  private  int actual = 1;
+  private  int line = 1;
   private boolean newLine = true;
+
+
   @Override
   public void write(String str, int off, int len) throws IOException {
-    str = str.substring(off, off+len);
-    String lines[] = Utils.getNextLine(str);
-
-    while(!lines[0].equals("")){
-      if (newLine) {
-        out.write(actual++ + "\t" + lines[0]);
-      }
-      else {
-        out.write(lines[0]);
-      }
-      newLine = true;
-      lines = Utils.getNextLine(lines[1]);
-    }
-    if(newLine){
-      out.write(actual++ + "\t" + lines[1]);
-      newLine = false;
-    }
-    else{
-      out.write(lines[1]);
+    for(int i = off; i < len+off; i++){
+      write((int)str.charAt(i));
     }
   }
 
   @Override
   public void write(char[] cbuf, int off, int len) throws IOException {
-    String str = new String();
-    for (int k = 0; k < cbuf.length; k++){
-      str = str + cbuf[k];
-    }
-    str = str.substring(off, off+len);
-    String lines[] = Utils.getNextLine(str);
-
-    while (!lines[0].equals("")){
-      if (newLine) {
-        out.write(actual++ + "\t" + lines[0]);
-      }
-      else {
-        out.write(lines[0]);
-      }
-      newLine = true;
-      lines = Utils.getNextLine(lines[1]);
-    }
-    if(newLine){
-      out.write(actual++ + "\t" + lines[1]);
-      newLine = false;
-    }
-    else{
-      out.write(lines[1]);
+    for(int i = off; i < len+off; i++){
+      write((int)cbuf[i]);
     }
   }
 
   @Override
   public void write(int c) throws IOException {
-    String str = String.valueOf((char)c);
-    String lines[] = Utils.getNextLine(str);
+    char car = (char)c;
 
-    if(!lines[0].equals("")){
-      out.write(lines[0]);
+    if(car == '\n'){
+      out.write(car);
+      out.write(line++ + "\t");
+      newLine = false;
+    }
+    else if(car == '\r'){
+      out.write(car);
       newLine = true;
     }
     else if(newLine){
-      out.write(actual++ + "\t" + lines[1]);
+      out.write(line++ + "\t" + car);
       newLine = false;
     }
-    else{
-      out.write(lines[1]);
-      newLine = false;
+    else {
+      out.write(car);
     }
   }
 }
